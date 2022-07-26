@@ -29,4 +29,6 @@ sonarqube {
     }
 }
 
+task stage(dependsOn: ['clean', 'installDist'])
+
 apply from: './main.gradle'
