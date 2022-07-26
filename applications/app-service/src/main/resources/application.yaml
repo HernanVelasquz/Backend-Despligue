@@ -1,0 +1,25 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: "juegocartas"
+  devtools:
+    add-properties: false
+  h2:
+    console:
+      enabled: true
+      path: "/h2"
+  profiles:
+    include: null
+  data:
+    mongodb:
+      uri: "mongodb+srv://juegocartasmhd:lo7LNnNyzcL2PK17@cluster0.qcqbwou.mongodb.net/juegocartas"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  endpoint:
+    health:
+      probes:
+        enabled: true
