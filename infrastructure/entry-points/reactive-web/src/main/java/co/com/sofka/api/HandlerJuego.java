@@ -13,30 +13,25 @@ import co.com.sofka.usecase.juego.actualizarjugadores.ActualizarJugadoresJuegoUs
 import co.com.sofka.usecase.juego.asignarcartaretirojugador.AsignarCartaRetiroJugadorUseCase;
 import co.com.sofka.usecase.juego.comenzarjuego.ComenzarJuegoUseCase;
 import co.com.sofka.usecase.juego.crearjuego.CrearJuegoUseCase;
-import co.com.sofka.usecase.juego.asignarganador.AsignarGanadorUseCase;
 import co.com.sofka.usecase.juego.aumentaronda.AumentaRondaUseCase;
+import co.com.sofka.usecase.juego.eliminarjuego.EliminarJuegoUseCase;
 import co.com.sofka.usecase.juego.finalizarjuego.FinalizarJuegoUseCase;
 import co.com.sofka.usecase.juego.listarbarajajugador.ListarBarajaJugadorUseCase;
 import co.com.sofka.usecase.juego.listarjuegos.ListarJuegosUseCase;
+import co.com.sofka.usecase.juego.obtenerjuegoporid.ObtenerJuegoPorIdUseCase;
 import co.com.sofka.usecase.juego.repartirbaraja.RepartirBarajaUseCase;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class HandlerJuego {
     private final CrearJuegoUseCase crearJuegoUseCase;
-
-    private final AsignarGanadorUseCase asignarGanadorUseCase;
     private final AumentaRondaUseCase aumentaRondaUseCase;
-
     private final ListarJuegosUseCase listarJuegoUseCase;
     private final ComenzarJuegoUseCase comenzarJuegoUseCase;
     private final RepartirBarajaUseCase repartirBarajaUseCase;
@@ -46,6 +41,9 @@ public class HandlerJuego {
     private final ActualizarJugadoresJuegoUseCase actualizarJugadoresJuegoUseCase;
     private final ListarBarajaJugadorUseCase listarBarajaJugadorUseCase;
     private final ActualizarBarajaJugadorJuegoUseCase actualizarBarajaJugadorJuegoUseCase;
+    private final EliminarJuegoUseCase eliminarJuegoUseCase;
+    private final ObtenerJuegoPorIdUseCase obtenerJuegoPorIdUseCase;
+
 
     public Mono<ServerResponse> crearJuegoPOSTUseCase(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(Juego.class)
@@ -54,20 +52,11 @@ public class HandlerJuego {
                         .body(crearJuegoUseCase.crearJuego(e), Juego.class));
     }
 
-    public Mono<ServerResponse> asignarGanadorPOSTUseCase(ServerRequest serverRequest) {
-        var id = serverRequest.pathVariable("id");
-        return serverRequest.bodyToMono(Juego.class)
-                .flatMap(element -> ServerResponse.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(asignarGanadorUseCase.asignarGanador(id, element.getJugadores()), Juego.class));
-    }
-
     public Mono<ServerResponse> aumentaRondaPOSTUseCase(ServerRequest serverRequest) {
         var id = serverRequest.pathVariable("id");
-        return serverRequest.bodyToMono(Juego.class)
-                .flatMap(element -> ServerResponse.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(aumentaRondaUseCase.aumentarRonda(id), Juego.class));
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(aumentaRondaUseCase.aumentarRonda(id), Juego.class);
     }
 
     public Mono<ServerResponse> listarJuegosGETUseCase(ServerRequest serverRequest) {
@@ -90,6 +79,7 @@ public class HandlerJuego {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(repartirBarajaUseCase.repartirBaraja(id), Juego.class);
     }
+
     public Mono<ServerResponse> finalizarJuegoGETUseCase(ServerRequest serverRequest) {
         var id = serverRequest.pathVariable("id");
         return ServerResponse.ok()
@@ -135,6 +125,20 @@ public class HandlerJuego {
                 .flatMap(element -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(actualizarBarajaJugadorJuegoUseCase.actualizarBarajaJugador(id, element.getIdJugador(), element.getBaraja()), Juego.class));
+    }
+
+    public Mono<ServerResponse> eliminarJuegoDELETEUseCase(ServerRequest serverRequest) {
+        var id = serverRequest.pathVariable("id");
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(eliminarJuegoUseCase.eliminarJuego(id), Juego.class);
+    }
+
+    public Mono<ServerResponse> obtenerJuegoIdGETUseCase(ServerRequest serverRequest) {
+        var id = serverRequest.pathVariable("id");
+        return ServerResponse.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(obtenerJuegoPorIdUseCase.finById(id), Juego.class);
     }
 
 }
